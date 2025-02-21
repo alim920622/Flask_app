@@ -1,7 +1,7 @@
 import os
 from quart import Quart, render_template, request
 from aiogram import Bot, Dispatcher
-from aiogram.types import ParseMode
+from aiogram.enums import ParseMode
 
 app = Quart(__name__)
 
