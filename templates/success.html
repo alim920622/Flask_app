@@ -1,1 +1,14 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Form submitted successfully!</h2>
+    <p><strong>Your Gmail account:</strong> {{ gmail }}</p>
+    <p><strong>Secondary email recovery:</strong> {{ recovery_email }}</p>
+</body>
+</html>
