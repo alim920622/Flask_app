@@ -1,3 +1,5 @@
+quart
+python-telegram-bot
 flask
 flask-wtf
-python-telegram-bot
+jinja2
