@@ -1,3 +1,4 @@
 quart
+werkzeug<3.0.0
 aiogram
 quart-wtf
