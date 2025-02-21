@@ -1,5 +1,3 @@
 quart
-python-telegram-bot
-flask
-flask-wtf
-jinja2
+aiogram
+quart-wtf
