@@ -1,0 +1,25 @@
+# Python Bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Flask specific
+instance/
+.webassets-cache
+
+# Environment variables (например, пароли или ключи API)
+.env
+
+# Logs
+*.log
+
+# Pytest cache (если используешь тесты с pytest)
+.pytest_cache/
+
+# Jupyter notebook checkpoints (если используешь Jupyter)
+.ipynb_checkpoints/
