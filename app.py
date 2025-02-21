@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import os  # Импортируем os для работы с переменными окружения
 
 app = Flask(__name__)
 
