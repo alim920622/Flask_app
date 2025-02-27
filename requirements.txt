@@ -1,5 +1,2 @@
-quart
-werkzeug<3.0.0
-aiogram
-quart-wtf
-email_validator
+flask
+flask-wtf
