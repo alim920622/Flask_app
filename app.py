@@ -43,7 +43,7 @@ class LoginForm(QuartForm):
                                 render_kw={"placeholder": "Secondary email recovery", "type": "text"})
     submit = SubmitField('login')
 
-# Маршрут для формы
+# Маршрут для формы 00
 @app.route('/', methods=['GET', 'POST'])
 async def show_form():
     form = await LoginForm.create_form()
